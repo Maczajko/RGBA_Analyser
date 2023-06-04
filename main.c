@@ -65,60 +65,80 @@ int main()
 
     char text[20];
     char *ParseCommand;
+    int Flag=0;
 
-    printf("Enter command (or -commands) : ");
-    fgets(text,20,stdin);
-
-    ParseCommand=strtok(text, " "); 
-        
-    if( 0 == (strcmp(ParseCommand,"-commands")))
+    do
     {
-        CommandListPrinter();
-    }
-    else if(0 == (strcmp(ParseCommand,"-m")) || 0 == (strcmp(ParseCommand,"--mode")) )
-    {
-        ParseCommand=strtok(NULL, "\n");
+   
+        printf("\nEnter command (or -commands) : ");
+        fgets(text,20,stdin);
 
-        if(0 == strcmp(ParseCommand,"mix"))
+        ParseCommand=strtok(text, "\n"); 
+            
+        if( 0 == (strcmp(ParseCommand,"-commands")))
         {
-            mix2(&Color);
-            printer(&Color);
-            SaveColor("colors.txt", &Color);
-        }
-        else if(0 == strcmp(ParseCommand,"lowest"))
-        {
-            RGBAchooser(lowest,"colors.txt", &Color);
-            printer(&Color);
-            SaveColor("colors.txt", &Color);
+            CommandListPrinter();
 
-        }
-        else if(0 == strcmp(ParseCommand,"highest"))
-        {
-            RGBAchooser(highest,"colors.txt", &Color);
-            printer(&Color);
-            SaveColor("colors.txt", &Color);
-        }
-        else if(0 == strcmp(ParseCommand,"mix-saturate"))
-        {
-            mix_saturate("colors.txt",&Color);
-            printer(&Color);
-            SaveColor("colors.txt", &Color);
+            printf("\nEnter command (or -commands) : ");
+            fgets(text,20,stdin);
+
+            ParseCommand=strtok(text, " "); 
+            
         }
         else
         {
-            printf("Wrong command!\n\n");
-            CommandListPrinter();
-
+            ParseCommand=strtok(text, " "); 
         }
 
-    }
-    else
-    {
-        printf("Wrong command!\n\n");
-        CommandListPrinter();
-    }
 
-   
+        if(0 == (strcmp(ParseCommand,"-m")) || 0 == (strcmp(ParseCommand,"--mode")) )
+        {
+            ParseCommand=strtok(NULL, "\n");
+
+            if(0 == strcmp(ParseCommand,"mix"))
+            {
+                mix2(&Color);
+                printer(&Color);
+                SaveColor("colors.txt", &Color);
+                Flag = 1;
+            }
+            else if(0 == strcmp(ParseCommand,"lowest"))
+            {
+                RGBAchooser(lowest,"colors.txt", &Color);
+                printer(&Color);
+                SaveColor("colors.txt", &Color);
+                Flag = 1;
+
+            }
+            else if(0 == strcmp(ParseCommand,"highest"))
+            {
+                RGBAchooser(highest,"colors.txt", &Color);
+                printer(&Color);
+                SaveColor("colors.txt", &Color);
+                Flag = 1;
+            }
+            else if(0 == strcmp(ParseCommand,"mix-saturate"))
+            {
+                mix_saturate("colors.txt",&Color);
+                printer(&Color);
+                SaveColor("colors.txt", &Color);
+                Flag = 1;
+            }
+            else
+            {
+                printf("\n\nWrong command!\n\n");
+                CommandListPrinter();
+
+            }
+
+        }
+        else
+        {
+            printf("\n\nWrong command!\n\n");
+            CommandListPrinter();
+        }
+
+    } while (Flag == 0);
 
 }
 
@@ -195,11 +215,10 @@ int mix2(Color_t *Color)
     int16_t i,counter, redTmp, blueTmp, greenTmp, alphaTmp;
     uint16_t redBin=0,greenBin=0,blueBin=0,alphaBin=0;
 
-    printf("How many color do You want to mix?(max 127)");
+    printf("How many color do You want to mix? (max 127) :");
     scanf("%d", &NumberOfColors);
     
 
-    //x = (NumberOfColors<0 || NumberOfColors>127)? printf("wrong value! default answer = 0\n"), NumberOfColors = 0 :0;
 
     if(NumberOfColors<0 || NumberOfColors>127)
     {
@@ -211,7 +230,9 @@ int mix2(Color_t *Color)
     
     
 
-    printf("RGBA Format : /^([0-9]{1,3},){3}[0-9]{1,3}$/ - for example: 255,0,0,255\n");
+    printf("\nRGBA Format : /^([0-9]{1,3},){3}[0-9]{1,3}$/ - for example: 255,0,0,255\n");
+    printf("or /^[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/ - for example: fff v ff00ff v ff0000ff\n\n");
+
 
 
     int c;
@@ -239,126 +260,126 @@ int mix2(Color_t *Color)
             
         }
 
-        printf("buff:%s\n", buff);
+        //printf("buff:%s\n", buff);
 
 
-            if((strpbrk(buff,",")==NULL))
-            {     
-                if( (strlen(buff)==4) || (strlen(buff)==7) || (strlen(buff)==9) )
-                {
-
-                Color_t TmpColor;
-                Parser(&TmpColor,buff);
-                redTmp = TmpColor.red;
-                greenTmp = TmpColor.green;
-                blueTmp = TmpColor.blue;
-                alphaTmp = TmpColor.alpha;
-
-                    /*
-                    printf("red: %d\n", redTmp);
-                    printf("green: %d\n", greenTmp);
-                    printf("blue: %d\n", blueTmp);
-                    printf("alpha: %d\n", alphaTmp);
-                    */
-
-                }
-                else 
-                {
-
-                printf("Wrong all Value! RGBA = Default = %d\n", DEFAULT_VALUE);
-                redTmp = DEFAULT_VALUE;
-                greenTmp = DEFAULT_VALUE;
-                blueTmp = DEFAULT_VALUE;
-                alphaTmp = DEFAULT_VALUE;
-
-                redBin+=redTmp;
-                greenBin+=greenTmp;
-                blueBin+=blueTmp;
-                alphaBin+=alphaTmp;
-
-                }
-            }
-            else
+        if((strpbrk(buff,",")==NULL))
+        {     
+            if( (strlen(buff)==4) || (strlen(buff)==7) || (strlen(buff)==9) )
             {
 
-                if((((Ptr = strtok(buff,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
-                {
-                    redTmp = atoi(Ptr);
-                    
+            Color_t TmpColor;
+            Parser(&TmpColor,buff);
+            redTmp = TmpColor.red;
+            greenTmp = TmpColor.green;
+            blueTmp = TmpColor.blue;
+            alphaTmp = TmpColor.alpha;
 
+                /*
+                printf("red: %d\n", redTmp);
+                printf("green: %d\n", greenTmp);
+                printf("blue: %d\n", blueTmp);
+                printf("alpha: %d\n", alphaTmp);
+                */
 
-                    if(!((redTmp >= 0) && (redTmp <= 255)))
-                    {
-                        redTmp=DEFAULT_VALUE;
-                        printf("Wrong value! R value = Deafult = %d\n", redTmp);
-                    }
-                } 
-                else 
-                {   
-                    redTmp=DEFAULT_VALUE;
-                    printf("Wrong input! R value = Deafult = %d\n", redTmp);
-                }
+            }
+            else 
+            {
 
+            printf("Wrong all Value! RGBA = 0\n");
+            //redTmp = DEFAULT_VALUE;
+            //greenTmp = DEFAULT_VALUE;
+            //blueTmp = DEFAULT_VALUE;
+           //alphaTmp = DEFAULT_VALUE;
 
-                if((((Ptr = strtok(NULL,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
-                {
-                    greenTmp = atoi(Ptr);
+            //redBin+=redTmp;
+            //greenBin+=greenTmp;
+           // blueBin+=blueTmp;
+           // alphaBin+=alphaTmp;
 
-                    if(!((greenTmp >= 0) && (greenTmp <= 255)))
-                    {
-                        greenTmp=DEFAULT_VALUE;
-                        printf("Wrong value! G value = Deafult = %d\n", greenTmp);
-                    }
-                } 
-                else 
-                {   
-                    
-                    greenTmp=DEFAULT_VALUE;
-                    printf("Wrong input! G value = Deafult = %d\n", greenTmp);
-                }
+            }
+        }
+        else
+        {
 
-
-                if((((Ptr = strtok(NULL,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
-                {
-                    blueTmp = atoi(Ptr);
-
-                    if(!((blueTmp >= 0) && (blueTmp <= 255)))
-                    {
-                        blueTmp=DEFAULT_VALUE;
-                        printf("Wrong value! B value = Deafult = %d\n", blueTmp);
-                    }
-                } 
-                else 
-                {   
-                    blueTmp=DEFAULT_VALUE;
-                    printf("Wrong input! B value = Deafult = %d\n", blueTmp);
-                }
-
-
-                if((((Ptr = strtok(NULL,"\n")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
-                {
-                    alphaTmp = atoi(Ptr);
-
-                    if(!((alphaTmp >= 0) && (alphaTmp <= 255)))
-                    {
-                        alphaTmp=DEFAULT_VALUE;
-                        printf("Wrong value! A value = Deafult = %d\n", alphaTmp);
-                    }
-                } 
-                else 
-                {   
-                    alphaTmp=DEFAULT_VALUE;
-                    printf("Wrong input! A value = Deafult = %d\n", alphaTmp);
-                }
+            if((((Ptr = strtok(buff,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
+            {
+                redTmp = atoi(Ptr);
                 
+
+
+                if(!((redTmp >= 0) && (redTmp <= 255)))
+                {
+                    redTmp=DEFAULT_VALUE;
+                    printf("Wrong value! R value = Deafult = %d\n", redTmp);
+                }
+            } 
+            else 
+            {   
+                redTmp=DEFAULT_VALUE;
+                printf("Wrong input! R value = Deafult = %d\n", redTmp);
             }
 
 
-        redBin+=redTmp;
-        greenBin+=greenTmp;
-        blueBin+=blueTmp;
-        alphaBin+=alphaTmp;   
-  
+            if((((Ptr = strtok(NULL,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
+            {
+                greenTmp = atoi(Ptr);
+
+                if(!((greenTmp >= 0) && (greenTmp <= 255)))
+                {
+                    greenTmp=DEFAULT_VALUE;
+                    printf("Wrong value! G value = Deafult = %d\n", greenTmp);
+                }
+            } 
+            else 
+            {   
+                
+                greenTmp=DEFAULT_VALUE;
+                printf("Wrong input! G value = Deafult = %d\n", greenTmp);
+            }
+
+
+            if((((Ptr = strtok(NULL,",")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
+            {
+                blueTmp = atoi(Ptr);
+
+                if(!((blueTmp >= 0) && (blueTmp <= 255)))
+                {
+                    blueTmp=DEFAULT_VALUE;
+                    printf("Wrong value! B value = Deafult = %d\n", blueTmp);
+                }
+            } 
+            else 
+            {   
+                blueTmp=DEFAULT_VALUE;
+                printf("Wrong input! B value = Deafult = %d\n", blueTmp);
+            }
+
+
+            if((((Ptr = strtok(NULL,"\n")) != NULL) && (strlen(Ptr)>=0) && (strspn(Ptr,"0123456789")==strlen(Ptr))))
+            {
+                alphaTmp = atoi(Ptr);
+
+                if(!((alphaTmp >= 0) && (alphaTmp <= 255)))
+                {
+                    alphaTmp=DEFAULT_VALUE;
+                    printf("Wrong value! A value = Deafult = %d\n", alphaTmp);
+                }
+            } 
+            else 
+            {   
+                alphaTmp=DEFAULT_VALUE;
+                printf("Wrong input! A value = Deafult = %d\n", alphaTmp);
+            }
+            
+        }
+
+
+    redBin+=redTmp;
+    greenBin+=greenTmp;
+    blueBin+=blueTmp;
+    alphaBin+=alphaTmp;   
+
     }
 
     Color->red = redBin/counter;
@@ -891,7 +912,13 @@ void Parser(Color_t *Color, char *buffToParse)
     }
     else
     {
-        printf("Wrong chars\n");
+        printf("Wrong chars!\n");
+        printf("Wrong all Value! RGBA = Default = %d\n", DEFAULT_VALUE);
+        Color->red = DEFAULT_VALUE;
+        Color->green = DEFAULT_VALUE;
+        Color->blue = DEFAULT_VALUE;
+        Color->alpha = DEFAULT_VALUE;
+
     }
 /*
     printf("red: %d\n", Color->red);
